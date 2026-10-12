@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#F4F1EA" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#191919" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="ناوا — دستیار شخصی آرام برای شروع کردن، ادامه دادن و دیدن پیشرفت">
+  <title>ناوا</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">رفتن به محتوای اصلی</a>
+  <div class="shell">
+    <aside class="sidebar" aria-label="بخش‌ها">
+      <div class="brand"><img src="icon.svg" alt="" width="28" height="28"><span>ناوا</span></div>
+      <nav id="nav-side" class="nav-side"></nav>
+      <div id="mini-timer" class="mini-timer" hidden></div>
+    </aside>
+    <main id="main" class="main" tabindex="-1"></main>
+  </div>
+  <nav id="nav-bottom" class="nav-bottom" aria-label="بخش‌ها"></nav>
+  <dialog id="dlg" class="dlg" aria-labelledby="dlg-title"></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript><p style="padding:24px">برای اجرای ناوا جاوااسکریپت را فعال کنید.</p></noscript>
+  <script src="core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

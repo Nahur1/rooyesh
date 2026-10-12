@@ -1,0 +1,20 @@
+# بیلدهای آماده — در Releases منتشر می‌شوند
+builds/
+*.exe
+*.apk
+dist/
+
+# رازها و داده‌ی کاربر
+.env
+.env.*
+!.env.example
+data/
+
+# وابستگی‌ها
+node_modules/
+*.log
+.wrangler/
+
+# سیستم‌عامل
+.DS_Store
+Thumbs.db
