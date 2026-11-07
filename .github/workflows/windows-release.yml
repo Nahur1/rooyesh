@@ -1,0 +1,24 @@
+name: Build Rooyesh for Windows
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - run: npm ci
+        working-directory: desktop
+      - run: npm run build
+        working-directory: desktop
+      - name: Publish Rooyesh installer
+        run: gh release upload v1.0.0 builds/windows-output/Rooyesh-Setup-1.0.0.exe --clobber --repo $env:GITHUB_REPOSITORY
+        env:
+          GH_TOKEN: ${{ github.token }}

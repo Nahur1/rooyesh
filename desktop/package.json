@@ -1,0 +1,7 @@
+{
+  "name": "rooyesh-desktop-build",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": { "build": "node prepare.mjs && electron-builder --projectDir ../builds/desktop-release --win --x64 --publish never" },
+  "devDependencies": { "electron-builder": "26.18.0" }
+}
