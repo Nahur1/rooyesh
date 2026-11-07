@@ -32,9 +32,9 @@
 ## آزمون‌ها
 ```bash
 npm test            # ۱۳ آزمون واحد منطق اصلی (فقط Node.js ≥ 18)
-npm run test:e2e    # ۲۷ آزمون مرورگری (نیاز به: npm i playwright && npx playwright install chromium)
+npm run test:e2e    # ۲۸ آزمون مرورگری (نیاز به: npm i playwright && npx playwright install chromium)
 ```
-نتیجه در زمان تحویل: **۱۳/۱۳ و ۲۷/۲۷ موفق**. اسکرین‌شات‌های آزمون در `tests/screenshots/` هستند.
+نتیجه در زمان تحویل: **۱۳/۱۳ و ۲۸/۲۸ موفق**. اسکرین‌شات‌های آزمون در `tests/screenshots/` هستند.
 
 ## فایل‌ها
 `index.html` · `styles.css` · `core.js` (منطق مشترک با ربات) · `app.js` (رابط کاربری) · `sw.js` و `manifest.webmanifest` (آفلاین/نصب) · `tests/`
