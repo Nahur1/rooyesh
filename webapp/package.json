@@ -1,8 +1,8 @@
 {
-  "name": "nava-webapp",
+  "name": "rooyesh-webapp",
   "version": "1.0.0",
   "private": true,
-  "description": "Nava (ناوا) — calm personal tasks, focus and growth web app",
+  "description": "Rooyesh (رویش) — calm personal tasks, focus and growth web app",
   "scripts": {
     "start": "node tests/serve.mjs 8080",
     "test": "node --test tests/core.test.js",

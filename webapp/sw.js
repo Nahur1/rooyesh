@@ -1,5 +1,5 @@
-/* Offline cache for Nava (used only when served over http/https). */
-const CACHE = 'nava-v1';
+/* Offline cache for Rooyesh (used only when served over http/https). */
+const CACHE = 'rooyesh-v1';
 const ASSETS = ['./', './index.html', './styles.css', './core.js', './app.js', './icon.svg', './manifest.webmanifest'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => {

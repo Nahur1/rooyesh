@@ -1,4 +1,4 @@
-// End-to-end tests of the Nava Telegram bot, driven in-process with a validating fake Bot API.
+// End-to-end tests of the Rooyesh Telegram bot, driven in-process with a validating fake Bot API.
 process.env.TZ = 'Asia/Tehran';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -14,7 +14,7 @@ test('start shows welcome, main keyboard and the today dashboard', async () => {
   const h = setup();
   await h.msg('/start');
   const first = h.api.calls.find((c) => c.method === 'sendMessage');
-  assert.match(first.params.text, /ناوا/);
+  assert.match(first.params.text, /رویش/);
   const kb = first.params.reply_markup.keyboard.flat().map((b) => b.text);
   for (const k of ['☀️ امروز', '🧭 از کجا شروع کنم؟', '🎯 اهداف', '⏱ تمرکز', '📚 یادگیری', '📓 دفتر', '🗓 مرور هفتگی', '⚙️ تنظیمات']) assert.ok(kb.includes(k), k);
   const today = h.lastText();
@@ -295,9 +295,9 @@ test('backup: export includes Telegram files; import into another account; web-a
   await h.press('ss:outs');
   await h.msg('/export');
   const up = api.calls.find((c) => c.upload);
-  assert.equal(up.method, 'sendDocument'); assert.match(up.upload.filename, /^nava-backup-2026-03-14\.json$/);
+  assert.equal(up.method, 'sendDocument'); assert.match(up.upload.filename, /^rooyesh-backup-2026-03-14\.json$/);
   const data = JSON.parse(up.upload.buffer.toString());
-  assert.equal(data.app, 'nava'); assert.equal(data.state.tasks.length, 1);
+  assert.equal(data.app, 'rooyesh'); assert.equal(data.state.tasks.length, 1);
   const fid = data.state.outputs[0].files[0].fileId;
   assert.ok(fid); assert.equal(Buffer.from(data.files[fid].data.split(',')[1], 'base64').toString(), 'print("hi")');
   // import into a different user
@@ -306,7 +306,7 @@ test('backup: export includes Telegram files; import into another account; web-a
   await other.msg('/settings'); await other.press('imp');
   await other.msg(null, { document: { file_id: 'X', file_name: 'note.txt', file_size: 3 } });
   assert.match(other.lastText(), /json/);
-  await other.msg(null, { document: { file_id: 'BACKUP', file_name: 'nava-backup.json', file_size: up.upload.buffer.length } });
+  await other.msg(null, { document: { file_id: 'BACKUP', file_name: 'rooyesh-backup.json', file_size: up.upload.buffer.length } });
   assert.equal(other.S.tasks.length, 1); assert.equal(other.S.sessions.length, 1); assert.equal(other.B.flow, null);
   // local file is resent by upload
   const before = api.calls.length;
@@ -315,14 +315,19 @@ test('backup: export includes Telegram files; import into another account; web-a
   const re = api.calls.slice(before).find((c) => c.upload);
   assert.equal(re.upload.buffer.toString(), 'print("hi")');
   // web-app style backup (files only as data URLs)
-  const web = { app: 'nava', format: 1, state: { tasks: [{ id: 'w1', title: 'از وب', status: 'todo' }], outputs: [{ id: 'o1', title: 'عکس', type: 'image', files: [{ fileId: 'f_web1', name: 'r.png', mime: 'image/png', size: 3 }] }] }, files: { f_web1: { name: 'r.png', mime: 'image/png', data: 'data:image/png;base64,' + Buffer.from('PNG').toString('base64') } } };
+  const web = { app: 'rooyesh', format: 1, state: { tasks: [{ id: 'w1', title: 'از وب', status: 'todo' }], outputs: [{ id: 'o1', title: 'عکس', type: 'image', files: [{ fileId: 'f_web1', name: 'r.png', mime: 'image/png', size: 3 }] }] }, files: { f_web1: { name: 'r.png', mime: 'image/png', data: 'data:image/png;base64,' + Buffer.from('PNG').toString('base64') } } };
   api.files.set('WEB', Buffer.from(JSON.stringify(web)));
-  await other.press('imp'); await other.msg(null, { document: { file_id: 'WEB', file_name: 'nava-web.json', file_size: 300 } });
+  await other.press('imp'); await other.msg(null, { document: { file_id: 'WEB', file_name: 'rooyesh-web.json', file_size: 300 } });
   assert.equal(other.S.tasks[0].title, 'از وب');
   assert.equal(fs.readFileSync(path.join(h.dir, 'files', '888', 'f_web1')).toString(), 'PNG');
+  // Pre-rename backups remain readable after switching the export brand.
+  web.app = 'nava';
+  api.files.set('LEGACY', Buffer.from(JSON.stringify(web)));
+  await other.press('imp'); await other.msg(null, { document: { file_id: 'LEGACY', file_name: 'legacy.json', file_size: 300 } });
+  assert.equal(other.S.tasks[0].title, 'از وب');
   api.files.set('BAD', Buffer.from('{"hello":1}'));
   await other.press('imp'); await other.msg(null, { document: { file_id: 'BAD', file_name: 'x.json', file_size: 11 } });
-  assert.match(other.lastText(), /پشتیبان ناوا نیست/); assert.equal(other.S.tasks[0].title, 'از وب');
+  assert.match(other.lastText(), /پشتیبان رویش نیست/); assert.equal(other.S.tasks[0].title, 'از وب');
   await other.msg('لغو'); assert.equal(other.B.flow, null);
   // wipe
   await other.press('wipe'); await other.press('wipeok');

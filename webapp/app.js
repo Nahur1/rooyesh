@@ -1,14 +1,14 @@
-/* Nava web app — UI layer. Data stays on this device (localStorage + IndexedDB). */
+/* Rooyesh web app — UI layer. Data stays on this device (localStorage + IndexedDB). */
 (function () {
   'use strict';
-  var C = window.NavaCore, L = C.LABELS, esc = C.escapeHtml, fa = C.fa;
-  var KEY = 'nava.v1';
+  var C = window.RooyeshCore, L = C.LABELS, esc = C.escapeHtml, fa = C.fa;
+  var KEY = 'rooyesh.v1';
   var $main = document.getElementById('main');
   var $dlg = document.getElementById('dlg');
 
   // ---------------- state ----------------
   function load() {
-    try { return C.normalizeState(JSON.parse(localStorage.getItem(KEY) || 'null')); }
+    try { return C.normalizeState(JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('nava.v1') || 'null')); }
     catch (e) { return C.defaultState(); }
   }
   var S = load();
@@ -31,7 +31,7 @@
     function db() {
       if (!dbp) dbp = new Promise(function (res, rej) {
         if (!('indexedDB' in window)) return rej(new Error('IndexedDB unavailable'));
-        var r = indexedDB.open('nava-files', 1);
+        var r = indexedDB.open('nava-files', 1); // Legacy database name preserves existing attachments.
         r.onupgradeneeded = function () { r.result.createObjectStore('files'); };
         r.onsuccess = function () { res(r.result); };
         r.onerror = function () { rej(r.error); };
@@ -492,7 +492,7 @@
         (i > 0 ? '<button type="button" class="icon-btn" data-act="sec-up" data-v="' + i + '" aria-label="جابه‌جایی به بالا">' + ico('up') + '</button>' : '<span style="width:44px"></span>') +
         (s.daySections.length > 1 ? '<button type="button" class="icon-btn" data-act="sec-del" data-v="' + i + '" aria-label="حذف بخش">' + ico('close') + '</button>' : '') + '</div>';
     }).join('');
-    return '<div class="page-head"><div><h1>تنظیمات</h1><p class="sub">ناوا را مطابق سلیقه و روال خودت تنظیم کن.</p></div></div>' +
+    return '<div class="page-head"><div><h1>تنظیمات</h1><p class="sub">رویش را مطابق سلیقه و روال خودت تنظیم کن.</p></div></div>' +
       '<form class="card stack" data-form="settings"><h2>ترجیحات</h2><div class="form-grid">' +
       field('نام (برای خوشامد)', input('name', s.name, { extra: ' maxlength="40"' })) +
       field('پوسته', '<select name="theme">' + opts({ system: 'هماهنگ با دستگاه', light: 'روشن', dark: 'تاریک' }, s.theme) + '</select>') +
@@ -753,7 +753,7 @@
       });
     } catch (e) { /* ignore */ }
   }
-  function notify(msg) { try { if ('Notification' in window && Notification.permission === 'granted') new Notification('ناوا', { body: msg || 'زمان جلسهٔ تمرکز تمام شد. چه چیزی ساختی؟', icon: 'icon.svg' }); } catch (e) { /* ignore */ } }
+  function notify(msg) { try { if ('Notification' in window && Notification.permission === 'granted') new Notification('رویش', { body: msg || 'زمان جلسهٔ تمرکز تمام شد. چه چیزی ساختی؟', icon: 'icon.svg' }); } catch (e) { /* ignore */ } }
   var baseTitle = document.title;
   function tick() {
     var t = S.timer, mini = document.getElementById('mini-timer');
@@ -766,7 +766,7 @@
     if (bar) { var c = 2 * Math.PI * 54; bar.setAttribute('stroke-dashoffset', (c * (1 - rem / (t.plannedMin * 60000))).toFixed(1)); }
     mini.hidden = ui.view === 'focus';
     mini.innerHTML = '<a href="#focus" style="color:inherit;text-decoration:none"><span class="muted">' + (t.phase === 'break' ? 'استراحت' : t.status === 'paused' ? 'متوقف' : 'در حال تمرکز') + '</span><b>' + clk + '</b></a>';
-    document.title = clk + ' · ناوا';
+    document.title = clk + ' · رویش';
     if (bl) bl.textContent = clk;
   }
 
@@ -778,10 +778,10 @@
     return Promise.all(ids.map(function (f) {
       return FileStore.get(f.fileId).then(function (b) { if (b) return blobToDataUrl(b).then(function (d) { files[f.fileId] = { name: f.name, mime: f.mime, data: d }; }); }).catch(function () { /* skip */ });
     })).then(function () {
-      var data = JSON.stringify({ app: 'nava', format: 1, exportedAt: iso(), state: S, files: files });
+      var data = JSON.stringify({ app: 'rooyesh', format: 1, exportedAt: iso(), state: S, files: files });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
-      a.download = 'nava-backup-' + today() + '.json';
+      a.download = 'rooyesh-backup-' + today() + '.json';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
       toast('فایل پشتیبان آماده شد');
@@ -790,7 +790,7 @@
   function importData(file) {
     return file.text().then(function (txt) {
       var data = JSON.parse(txt);
-      if (!data || data.app !== 'nava' || !data.state) throw new Error('این فایل پشتیبان ناوا نیست');
+      if (!data || (data.app !== 'rooyesh' && data.app !== 'nava') || !data.state) throw new Error('این فایل پشتیبان رویش نیست');
       var st = C.normalizeState(data.state);
       return FileStore.clear().catch(function () {}).then(function () {
         return Promise.all(Object.keys(data.files || {}).map(function (id) {
@@ -1019,5 +1019,5 @@
   if (S.timer && C.timerDone(S.timer, now())) finishTimer(true); else maybeShowPending();
   if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(function () {});
 
-  window.__nava = { state: function () { return S; }, reload: function () { S = load(); render(); } };
+  window.__rooyesh = { state: function () { return S; }, reload: function () { S = load(); render(); } };
 })();

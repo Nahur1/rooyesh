@@ -22,7 +22,7 @@ export function startMockTelegram(token) {
     calls.push({ method, params, multipart: type.startsWith('multipart/') });
     waiters = waiters.filter((w) => !w());
     switch (method) {
-      case 'getMe': return send({ id: 1, is_bot: true, username: 'nava_mock_bot' });
+      case 'getMe': return send({ id: 1, is_bot: true, username: 'rooyesh_mock_bot' });
       case 'setMyCommands': return send(true);
       case 'getUpdates': {
         const out = queue.filter((u) => u.update_id >= (params.offset || 0));

@@ -1,4 +1,4 @@
-"""Post-processing for Nava.xlsx.
+"""Post-processing for Rooyesh.xlsx.
   python postprocess.py prepare in.xlsx out.xlsx meta.json  → hidden helper columns, internal links, active sheet
   python postprocess.py rtl in.xlsx out.xlsx                → right-to-left sheet views (XML patch; keeps cached values)"""
 import json

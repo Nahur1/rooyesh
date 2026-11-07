@@ -14,7 +14,7 @@ const chat = { id: 4242, type: 'private' };
 
 test('polling loop, commands, inline buttons, multipart export and file import over HTTP', async () => {
   const mock = await startMockTelegram(TOKEN);
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'nava-int-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rooyesh-int-'));
   const errors = [];
   const app = await run({ token: TOKEN, apiBase: mock.base, dataDir: dir, pollTimeout: 0, tickMs: 50, log: { log() {}, warn() {}, error: (...a) => errors.push(a.join(' ')) } });
   try {
@@ -41,7 +41,7 @@ test('polling loop, commands, inline buttons, multipart export and file import o
     const doc = mock.calls.find((c) => c.method === 'sendDocument');
     assert.ok(doc.multipart); assert.equal(doc.params.chat_id, '4242');
     const backup = JSON.parse(doc.params.document.data.toString());
-    assert.equal(backup.app, 'nava'); assert.equal(backup.state.tasks[0].title, 'نوشتن گزارش');
+    assert.equal(backup.app, 'rooyesh'); assert.equal(backup.state.tasks[0].title, 'نوشتن گزارش');
     // import via getFile + file download
     backup.state.tasks[0].title = 'بازیابی‌شده';
     mock.files.set('docs/BK', Buffer.from(JSON.stringify(backup)));
@@ -61,12 +61,12 @@ test('missing token gives a clear Persian error; .env loader', async () => {
   await assert.rejects(run({}), /BOT_TOKEN/);
   if (old) process.env.BOT_TOKEN = old;
   const f = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'env-')), '.env');
-  fs.writeFileSync(f, '# c\nNAVA_TEST_X="hello"\nNAVA_TEST_Y = 2\n');
-  loadEnv(f); assert.equal(process.env.NAVA_TEST_X, 'hello'); assert.equal(process.env.NAVA_TEST_Y, '2');
+  fs.writeFileSync(f, '# c\nROOYESH_TEST_X="hello"\nROOYESH_TEST_Y = 2\n');
+  loadEnv(f); assert.equal(process.env.ROOYESH_TEST_X, 'hello'); assert.equal(process.env.ROOYESH_TEST_Y, '2');
 });
 
 test('wrong token → clear startup error instead of a silent hang', async () => {
   const mock = await startMockTelegram('other');
-  await assert.rejects(run({ token: TOKEN, apiBase: mock.base, dataDir: fs.mkdtempSync(path.join(os.tmpdir(), 'nava-x-')), log: { log() {}, warn() {}, error() {} } }), /Unauthorized/);
+  await assert.rejects(run({ token: TOKEN, apiBase: mock.base, dataDir: fs.mkdtempSync(path.join(os.tmpdir(), 'rooyesh-x-')), log: { log() {}, warn() {}, error() {} } }), /Unauthorized/);
   await mock.close();
 });

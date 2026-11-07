@@ -18,5 +18,5 @@ export function serve(port = 0) {
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const s = await serve(Number(process.argv[2] || 8080));
-  console.log('Nava → http://127.0.0.1:' + s.address().port);
+  console.log('Rooyesh → http://127.0.0.1:' + s.address().port);
 }

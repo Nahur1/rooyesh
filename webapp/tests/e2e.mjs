@@ -1,4 +1,4 @@
-// End-to-end browser tests for the Nava web app (Playwright + Chromium).
+// End-to-end browser tests for the Rooyesh web app (Playwright + Chromium).
 // Run: node tests/e2e.mjs   (optional env: CHROMIUM=/path/to/chromium, SHOTS=dir)
 import { chromium } from 'playwright';
 import fs from 'node:fs';
@@ -31,18 +31,18 @@ function watch(page, tag) {
   page.on('console', (m) => { if (m.type() === 'error') errors.push(tag + ' console: ' + m.text()); });
 }
 const START = new Date(2026, 9, 11, 10, 0, 0);
-const state = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('nava.v1')));
+const state = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('rooyesh.v1')));
 const noOverflow = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
 async function submitDialog(page) { await page.locator('#dlg button[type=submit]').click(); await page.waitForFunction(() => !document.getElementById('dlg').open); }
 
-console.log('Nava web app — end-to-end tests');
+console.log('Rooyesh web app — end-to-end tests');
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 860 }, locale: 'fa-IR', timezoneId: 'Asia/Tehran', acceptDownloads: true, colorScheme: 'light' });
 const page = await ctx.newPage(); watch(page, 'desktop');
 await page.clock.install({ time: START });
 await page.goto(BASE);
 
 await step('loads with RTL layout, 7 sections in sidebar, no errors', async () => {
-  assert(await page.title() === 'ناوا');
+  assert(await page.title() === 'رویش');
   assert(await page.getAttribute('html', 'dir') === 'rtl');
   assert(await page.locator('#nav-side .nav-item').count() === 7);
   assert(await page.locator('[data-testid=sections] section[data-section]').count() === 5, 'five default dashboard sections');
@@ -78,7 +78,7 @@ await step('project with steps: progress, next step, reorder and mark done', asy
   await proj.getByText('طراحی صفحهٔ اصلی').first().waitFor();
   await proj.locator('summary').click();
   await proj.locator('[data-task]', { hasText: 'طراحی صفحهٔ اصلی' }).locator('input.check').check();
-  await page.waitForFunction(() => JSON.parse(localStorage.getItem('nava.v1')).tasks.some((t) => t.title === 'طراحی صفحهٔ اصلی' && t.status === 'done'));
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem('rooyesh.v1')).tasks.some((t) => t.title === 'طراحی صفحهٔ اصلی' && t.status === 'done'));
   const proj2 = page.locator('div[data-project]', { hasText: 'ساخت سایت نمونه‌کار' });
   assert((await proj2.textContent()).includes('۱/۳'), 'shows 1/3');
   assert((await proj2.locator('.row').filter({ hasText: 'قدم بعدی:' }).textContent()).includes('نوشتن متن معرفی'), 'next step advanced');
@@ -360,7 +360,7 @@ await step('backup export includes attachments; wipe; import restores everything
   backupPath = path.join(SHOTS, '..', 'backup-test.json');
   await dl.saveAs(backupPath);
   const data = JSON.parse(fs.readFileSync(backupPath, 'utf8'));
-  assert(data.app === 'nava' && Object.keys(data.files).length === 2, 'files in backup');
+  assert(data.app === 'rooyesh' && Object.keys(data.files).length === 2, 'files in backup');
   await page.getByRole('button', { name: 'پاک کردن همهٔ داده‌ها' }).click();
   await submitDialog(page);
   assert((await state(page)).tasks.length === 0);
@@ -417,7 +417,7 @@ await step('welcome-back banner after 3+ days and a lighter plan', async () => {
   await p2.evaluate(() => {
     const tasks = [];
     for (let i = 0; i < 10; i++) tasks.push({ id: 't' + i, title: 'کار عقب‌افتاده ' + i, priority: 'high', energy: 'medium', estimate: 30, due: '2026-10-05', status: 'todo', createdAt: '2026-10-01T00:00:00Z', todayKey: '2026-10-06' });
-    localStorage.setItem('nava.v1', JSON.stringify({ tasks, sessions: [{ id: 's', start: new Date(2026, 9, 6, 9).toISOString(), minutes: 30, kind: 'work' }] }));
+    localStorage.setItem('rooyesh.v1', JSON.stringify({ tasks, sessions: [{ id: 's', start: new Date(2026, 9, 6, 9).toISOString(), minutes: 30, kind: 'work' }] }));
   });
   await p2.reload();
   await p2.getByTestId('comeback').waitFor();
@@ -445,7 +445,7 @@ await step('mobile: bottom navigation, “more” sheet, no horizontal overflow 
   await m.waitForURL(/#learning/);
   assert(!(await m.locator('#dlg').evaluate((d) => d.open)));
   await m.evaluate(() => {
-    localStorage.setItem('nava.v1', JSON.stringify({ goals: [{ id: 'g', title: 'قبولی و پیشرفت در کارشناسی ارشد هوش مصنوعی با یک عنوان بسیار طولانی برای آزمون شکستن خط', status: 'active' }],
+    localStorage.setItem('rooyesh.v1', JSON.stringify({ goals: [{ id: 'g', title: 'قبولی و پیشرفت در کارشناسی ارشد هوش مصنوعی با یک عنوان بسیار طولانی برای آزمون شکستن خط', status: 'active' }],
       projects: [{ id: 'p', title: 'مرور مباحث پایه', goalId: 'g', status: 'active' }],
       tasks: [{ id: 'a', title: 'یک کار با عنوان خیلی خیلی طولانی که باید در صفحهٔ موبایل بدون بیرون‌زدگی شکسته شود', projectId: 'p', priority: 'high', estimate: 30, due: '2026-10-11', status: 'todo', todayKey: '2026-10-11', section: 'main' }] }));
   });
@@ -475,6 +475,21 @@ await step('works when opened directly from disk (file://)', async () => {
   await f.locator('[data-task]', { hasText: 'تست فایل' }).waitFor();
 });
 await ctx4.close();
+
+const legacyCtx = await browser.newContext();
+const legacyPage = await legacyCtx.newPage(); watch(legacyPage, 'legacy');
+await step('rebrand preserves legacy browser data and imports old backups', async () => {
+  await legacyPage.goto(BASE);
+  await legacyPage.evaluate(() => localStorage.setItem('nava.v1', JSON.stringify({ tasks: [{id:'legacy',title:'کار قدیمی',status:'todo',todayKey:'2026-10-11',section:'main'}] })));
+  await legacyPage.reload();
+  assert(await legacyPage.evaluate(() => window.__rooyesh.state().tasks[0].title === 'کار قدیمی'));
+  await legacyPage.goto(BASE + '#settings');
+  const backup = {app:'nava',format:1,state:{tasks:[{id:'old-backup',title:'پشتیبان قدیمی',status:'todo'}]}};
+  await legacyPage.locator('#import-file').setInputFiles({name:'legacy.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});
+  await legacyPage.waitForFunction(() => window.__rooyesh.state().tasks[0]?.id === 'old-backup');
+  assert(await legacyPage.evaluate(() => JSON.parse(localStorage.getItem('rooyesh.v1')).tasks[0].id === 'old-backup'));
+});
+await legacyCtx.close();
 
 await step('no JavaScript errors in any session', async () => { assert(errors.length === 0, errors.join('\n')); });
 

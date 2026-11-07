@@ -1,4 +1,4 @@
-// Nava Telegram bot — entry point (long polling, no external dependencies).
+// Rooyesh Telegram bot — entry point (long polling, no external dependencies).
 // Usage: BOT_TOKEN=123:abc node index.js   (or put values in a .env file next to this file)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -29,7 +29,7 @@ export async function run(opts = {}) {
   const bot = createBot({ api, store, allowed, log });
   const me = await api.call('getMe');
   await api.call('setMyCommands', { commands: COMMANDS }).catch((e) => log.warn && log.warn('setMyCommands:', e.message));
-  log.log && log.log(`ناوا روشن شد: @${me.username}` + (allowed.length ? ` (فقط برای ${allowed.join(', ')})` : ' (بدون محدودیت کاربر — ALLOWED_USERS را تنظیم کن)'));
+  log.log && log.log(`رویش روشن شد: @${me.username}` + (allowed.length ? ` (فقط برای ${allowed.join(', ')})` : ' (بدون محدودیت کاربر — ALLOWED_USERS را تنظیم کن)'));
 
   let stopped = false, offset = 0, ctrl = null;
   const tickTimer = setInterval(() => { bot.tick().catch((e) => log.error('tick', e.message)); }, opts.tickMs || 5000);

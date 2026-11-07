@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Builder for Nava.xlsx — Persian, right-to-left personal task & growth workbook.
-// Run: node build_nava.mjs   (writes Nava.xlsx next to this file; previews in build/preview)
+// Builder for Rooyesh.xlsx — Persian, right-to-left personal task & growth workbook.
+// Run: node build_rooyesh.mjs   (writes Rooyesh.xlsx next to this file; previews in build/preview)
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,7 +13,7 @@ import { toGregorian } from '../telegram-bot/src/jalali.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SK = '/skills/sheets/scripts';
-const OUT = path.join(HERE, 'Nava.xlsx');
+const OUT = path.join(HERE, 'Rooyesh.xlsx');
 const BUILD = path.join(HERE, 'build');
 
 // ---------- palette & fonts ----------
@@ -105,10 +105,10 @@ function dataSheet(b, name, key, { titleText, sub, cols, sample = [], table, tab
     if (c.wrap) st.wrapText = true;
     applyRangeStyle(s, R, st);
     if (c.kind === 'hx') applyRangeStyle(s, `${c.c}4`, { fill: 'B9C4BE' });
-    if (c.list) addValidationRule(s, R, { type: 'list', values: c.list, allowBlank: true, error: 'یکی از گزینه‌های فهرست را انتخاب کنید.', errorTitle: 'ناوا' });
-    if (c.listRef) addValidationRule(s, R, { type: 'list', formula1: c.listRef, allowBlank: true, error: 'یکی از گزینه‌های فهرست را انتخاب کنید.', errorTitle: 'ناوا' });
+    if (c.list) addValidationRule(s, R, { type: 'list', values: c.list, allowBlank: true, error: 'یکی از گزینه‌های فهرست را انتخاب کنید.', errorTitle: 'رویش' });
+    if (c.listRef) addValidationRule(s, R, { type: 'list', formula1: c.listRef, allowBlank: true, error: 'یکی از گزینه‌های فهرست را انتخاب کنید.', errorTitle: 'رویش' });
     if (c.vrule) addValidationRule(s, R, Object.assign({ allowBlank: true }, c.vrule));
-    if (c.note) addCellNote(s, `${c.c}4`, c.note, { author: 'ناوا' });
+    if (c.note) addCellNote(s, `${c.c}4`, c.note, { author: 'رویش' });
   }
   helpers[name] = cols.filter((c) => c.kind === 'hx').map((c) => c.c);
   if (table) addExcelTable(s, `B4:${lastCol}${r1}`, { name: table, style: 'TableStyleLight1' });
@@ -128,7 +128,7 @@ const LISTS = {
 };
 
 // =====================================================================
-const b = createXlsxSpec({ creator: 'Nava', activeSheet: SH.today });
+const b = createXlsxSpec({ creator: 'Rooyesh', activeSheet: SH.today });
 // sheet order
 const sGuide = addWorksheetSpec(b, SH.guide, { showGridlines: false, tabColor: '9DB8A9', columnWidths: { A: 2, B: 26, C: 90 } });
 const sToday = addWorksheetSpec(b, SH.today, { showGridlines: false, tabColor: COL.accent, columnWidths: { A: 2, B: 36, C: 14, D: 16, E: 3, F: 34, G: 12, H: 40, I: 2 } });
@@ -381,7 +381,7 @@ const sWeek = addWorksheetSpec(b, SH.week, { showGridlines: false, tabColor: 'D9
   writeCellValues(s, 'B4', [['شروع هفته (شمسی)']]);
   applyRangeStyle(s, 'B4', { bold: true });
   applyRangeStyle(s, 'C4', { fill: COL.input, border: { color: COL.line }, align: 'center', numberFormat: '@' });
-  addCellNote(s, 'C4', 'خالی = هفتهٔ جاری. هر تاریخی از هفته را بنویسید؛ شنبهٔ همان هفته حساب می‌شود.', { author: 'ناوا' });
+  addCellNote(s, 'C4', 'خالی = هفتهٔ جاری. هر تاریخی از هفته را بنویسید؛ شنبهٔ همان هفته حساب می‌شود.', { author: 'رویش' });
   writeCellFormulas(s, 'D4', [[`"از "&${jLongF(W)}&" تا "&${jLongF(W + '+6')}`]]);
   applyRangeStyle(s, 'D4', { fontColor: COL.sub });
   writeCellFormulas(s, 'Y4:Z4', [[normF('C4'), `IF(ISNUMBER(Z3),Z3-MOD(WEEKDAY(Z3),7),TodayDate-MOD(WEEKDAY(TodayDate),7))`]]);
@@ -533,7 +533,7 @@ for (const [n, ref] of Object.entries(NAMES)) defineWorkbookName(b, n, ref);
 {
   const s = sToday;
   applyRangeStyle(s, 'A1:I48', base);
-  writeCellValues(s, 'B1', [['🌿 ناوا · امروز']]);
+  writeCellValues(s, 'B1', [['🌿 رویش · امروز']]);
   applyRangeStyle(s, 'B1', { fontFamily: FONT, fontSize: 20, bold: true, fontColor: COL.ink });
   writeCellFormulas(s, 'B2', [[jLongF('TodayDate')]]);
   applyRangeStyle(s, 'B2', { fontSize: 12, fontColor: COL.sub });
@@ -549,7 +549,7 @@ for (const [n, ref] of Object.entries(NAMES)) defineWorkbookName(b, n, ref);
   applyRangeStyle(s, 'C6:D6', { fill: COL.calc, fontColor: COL.sub, align: 'center', border: { color: COL.line } });
   addValidationRule(s, 'C4', { type: 'list', formula1: 'DayTypes', error: 'یکی از نوع‌های روز را انتخاب کنید.' });
   addValidationRule(s, 'C5', { type: 'whole', operator: 'between', formula1: '0', formula2: '1000', allowBlank: true, error: 'عدد دقیقه.' });
-  addCellNote(s, 'C5', 'اختیاری. خالی = بودجهٔ پیش‌فرضِ نوع روز (برگهٔ تنظیمات).', { author: 'ناوا' });
+  addCellNote(s, 'C5', 'اختیاری. خالی = بودجهٔ پیش‌فرضِ نوع روز (برگهٔ تنظیمات).', { author: 'رویش' });
   writeCellFormulas(s, 'F4:F6', [[`"حال امروز در دفتر: "&IFERROR(CHOOSE(INDEX(${J_('B')},MATCH(TodayDate,${J_('G')},0)),"😞","😕","😐","🙂","😄"),"— (هنوز ننوشته‌ای)")`], ['"کارهای باز در کل: "&COUNTIF(' + T_('W') + ',1)&" · امروز: "&COUNTIFS(' + T_('AB') + ',"?*",' + T_('E') + ',"<>انجام‌شده")'], [`"برای تغییر بخش‌ها، پومودورو و معیارها ← برگهٔ تنظیمات"`]]);
   applyRangeStyle(s, 'F4:F6', { fontColor: COL.sub });
   // where am I
@@ -622,14 +622,14 @@ for (const [n, ref] of Object.entries(NAMES)) defineWorkbookName(b, n, ref);
 {
   const s = sGuide;
   applyRangeStyle(s, 'A1:C40', base);
-  title(s, '🌿 ناوا — راهنمای استفاده', 'نسخهٔ اکسل ناوا: برنامه‌ریزی آرام، تمرکز و رشد شخصی — همه‌چیز داخل همین فایل و روی کامپیوتر خودت.');
+  title(s, '🌿 رویش — راهنمای استفاده', 'نسخهٔ اکسل رویش: برنامه‌ریزی آرام، تمرکز و رشد شخصی — همه‌چیز داخل همین فایل و روی کامپیوتر خودت.');
   const rows = [
     ['شروع سریع', '۱) ردیف‌های نمونه را پاک کن (فقط سلول‌های ورودی؛ ستون‌های خاکستری خودکارند). ۲) در «اهداف»، «پروژه‌ها» و «کارها» موارد خودت را بنویس. ۳) هر روز به برگهٔ «امروز» سر بزن.'],
     ['رنگ‌ها', 'کرم/سفید = ورودی تو · خاکستری‌سبز = محاسبهٔ خودکار (دست نزن) · ستون‌های کمکی پنهان‌اند.'],
     ['تاریخ‌ها', 'همهٔ تاریخ‌ها شمسی‌اند، مثل 1405/07/19 (رقم فارسی هم قبول است). Ctrl+; تاریخ امروز را می‌گذارد و آن هم پذیرفته می‌شود. تاریخ اشتباه قرمز می‌شود.'],
     ['امروز', 'نوع روز (شلوغ / کم‌انرژی / معمولی / پرانرژی) و زمان در دسترس را انتخاب کن؛ پیشنهاد «از کجا شروع کنم؟»، برنامهٔ پیشنهادی و بخش‌های امروز خودکار به‌روز می‌شوند.'],
     ['از کجا شروع کنم؟', 'بر اساس اولویت، برنامهٔ امروز، کار نیمه‌کاره، نزدیکی مهلت، قدم بعدی پروژه، ارتباط با هدف، زمان در دسترس، شروع آسان و انرژی امروز امتیاز می‌دهد و دلیلش را می‌گوید. معیارها در «تنظیمات» قابل خاموش/روشن‌اند.'],
-    ['بازگشت آرام', 'اگر چند روز (پیش‌فرض ۳) فعالیتی ثبت نشده باشد، ناوا بدون سرزنش یک برنامهٔ سبک‌تر پیشنهاد می‌دهد. کارهای ناتمام سر جایشان می‌مانند و خودکار به امروز ریخته نمی‌شوند.'],
+    ['بازگشت آرام', 'اگر چند روز (پیش‌فرض ۳) فعالیتی ثبت نشده باشد، رویش بدون سرزنش یک برنامهٔ سبک‌تر پیشنهاد می‌دهد. کارهای ناتمام سر جایشان می‌مانند و خودکار به امروز ریخته نمی‌شوند.'],
     ['اهداف ← پروژه‌ها ← کارها', 'هر کار با شناسهٔ پروژه به پروژه وصل می‌شود و هر پروژه با شناسهٔ هدف به هدف. پیشرفت، قدم بعدی و زمان صرف‌شده خودکارند.'],
     ['جلسات تمرکز', 'اکسل تایمر زنده ندارد؛ هر جلسه را با ساعت شروع و پایان (Ctrl+Shift+; ساعت فعلی را می‌گذارد) یا مدت دستی ثبت کن، به کار یا منبع یادگیری وصلش کن و نتیجه‌اش را بنویس. برای تایمر زنده از نسخهٔ وب یا ربات تلگرام استفاده کن.'],
     ['پومودورو', 'الگوی تمرکز/استراحت در «تنظیمات»؛ برگهٔ «امروز» استراحت بعدی را بر اساس تعداد جلسه‌های امروز نشان می‌دهد.'],
@@ -661,7 +661,7 @@ function run(label, cmd, args) {
   if (r.status !== 0) throw new Error(`${label} failed\n${String(r.stdout).slice(-4000)}\n${String(r.stderr).slice(-1500)}`);
   return r.stdout;
 }
-const MAT = path.join(BUILD, 'Nava.materialized.xlsx'), POST = path.join(BUILD, 'Nava.post.xlsx');
+const MAT = path.join(BUILD, 'Rooyesh.materialized.xlsx'), POST = path.join(BUILD, 'Rooyesh.post.xlsx');
 try {
   await buildXlsx(b, { specPath: path.join(BUILD, 'workbook-spec.json'), outputPath: MAT, auditPath: path.join(BUILD, 'audit-materialized.txt'), previewDir: path.join(BUILD, 'preview'), recalculate: false });
 } catch (e) {
@@ -669,7 +669,7 @@ try {
   if (!fs.existsSync(MAT) || !/audit workbook failed/.test(e.message)) throw e;
 }
 fs.writeFileSync(path.join(BUILD, 'meta.json'), JSON.stringify({ helpers, notes, active: SH.today }));
-const RECALC = path.join(BUILD, 'Nava.recalculated.xlsx');
+const RECALC = path.join(BUILD, 'Rooyesh.recalculated.xlsx');
 console.log(run('prepare', 'python3', [path.join(HERE, 'postprocess.py'), 'prepare', MAT, POST, path.join(BUILD, 'meta.json')]).trim());
 const rec = run('recalculate', 'python3', [path.join(SK, 'recalculate.py'), POST, RECALC]);
 fs.writeFileSync(path.join(BUILD, 'recalc.json'), rec);

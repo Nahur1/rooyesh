@@ -1,7 +1,7 @@
-/* Nava core — pure logic shared by UI and tests (no DOM access). */
+/* Rooyesh core — pure logic shared by UI and tests (no DOM access). */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
-  else root.NavaCore = factory();
+  else root.RooyeshCore = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 

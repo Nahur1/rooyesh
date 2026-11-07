@@ -1,7 +1,7 @@
 {
-  "name": "nava-telegram-bot",
+  "name": "rooyesh-telegram-bot",
   "version": "1.0.0",
-  "description": "ناوا — ربات تلگرام مدیریت کار و رشد شخصی (بدون وابستگی خارجی)",
+  "description": "رویش — ربات تلگرام مدیریت کار و رشد شخصی (بدون وابستگی خارجی)",
   "type": "module",
   "main": "index.js",
   "engines": { "node": ">=18.17" },

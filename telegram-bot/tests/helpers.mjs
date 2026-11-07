@@ -49,7 +49,7 @@ export function fakeApi() {
       if (method === 'answerCallbackQuery') return true;
       if (method === 'getFile') { if (!files.has(p.file_id)) throw new Error('Bad Request: invalid file_id'); return { file_id: p.file_id, file_path: 'files/' + p.file_id }; }
       if (method === 'sendDocument' || method === 'sendPhoto') return { message_id: ++mid };
-      if (method === 'getMe') return { id: 1, is_bot: true, username: 'nava_test_bot' };
+      if (method === 'getMe') return { id: 1, is_bot: true, username: 'rooyesh_test_bot' };
       if (method === 'setMyCommands') return true;
       throw new Error('unexpected method ' + method);
     },
@@ -65,7 +65,7 @@ export function fakeApi() {
 
 export const T0 = Date.parse('2026-03-14T09:00:00+03:30'); // Saturday 1404/12/23
 export function setup({ dir, allowed = [], user = 777, api, clock } = {}) {
-  dir = dir || fs.mkdtempSync(path.join(os.tmpdir(), 'nava-bot-'));
+  dir = dir || fs.mkdtempSync(path.join(os.tmpdir(), 'rooyesh-bot-'));
   api = api || fakeApi();
   clock = clock || { t: T0 };
   const errors = [];

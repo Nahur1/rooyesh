@@ -1,4 +1,4 @@
-// Nava Telegram bot — handlers, flows and screens. Data model = shared core (src/core.cjs).
+// Rooyesh Telegram bot — handlers, flows and screens. Data model = shared core (src/core.cjs).
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -598,8 +598,8 @@ export function createBot({ api, store, allowed = [], now = () => Date.now(), lo
         else if (f.telegramFileId || f.fileId) skipped++;
       } catch (e) { skipped++; log.error && log.error('export file', e.message); }
     }
-    const json = JSON.stringify({ app: 'nava', format: 1, exportedAt: iso(), source: 'telegram-bot', state: S, files }, null, 1);
-    await api.upload('sendDocument', { chat_id: ctx.chatId, caption: '💾 پشتیبان ناوا — این فایل را در نسخهٔ وب (تنظیمات ← بازیابی) یا همین ربات می‌توانی بازیابی کنی.' + (skipped ? '\n⚠️ ' + fa(skipped) + ' فایل بزرگ داخل پشتیبان نیامد.' : '') }, 'document', 'nava-backup-' + today() + '.json', Buffer.from(json), 'application/json');
+    const json = JSON.stringify({ app: 'rooyesh', format: 1, exportedAt: iso(), source: 'telegram-bot', state: S, files }, null, 1);
+    await api.upload('sendDocument', { chat_id: ctx.chatId, caption: '💾 پشتیبان رویش — این فایل را در نسخهٔ وب (تنظیمات ← بازیابی) یا همین ربات می‌توانی بازیابی کنی.' + (skipped ? '\n⚠️ ' + fa(skipped) + ' فایل بزرگ داخل پشتیبان نیامد.' : '') }, 'document', 'rooyesh-backup-' + today() + '.json', Buffer.from(json), 'application/json');
     return null;
   }
   async function doImport(ctx, doc) {
@@ -608,7 +608,7 @@ export function createBot({ api, store, allowed = [], now = () => Date.now(), lo
     let data;
     try { const info = await api.call('getFile', { file_id: doc.file_id }); data = JSON.parse((await api.download(info.file_path)).toString('utf8')); }
     catch (e) { return say(ctx, 'خواندن فایل ممکن نشد: ' + esc(e.message)); }
-    if (!data || data.app !== 'nava' || !data.state) return say(ctx, 'این فایل پشتیبان ناوا نیست. یک فایل دیگر بفرست یا «لغو».');
+    if (!data || (data.app !== 'rooyesh' && data.app !== 'nava') || !data.state) return say(ctx, 'این فایل پشتیبان رویش نیست. یک فایل دیگر بفرست یا «لغو».');
     const st = C.normalizeState(data.state);
     wipeLocal(ctx.uid);
     let n = 0;
@@ -804,7 +804,7 @@ export function createBot({ api, store, allowed = [], now = () => Date.now(), lo
       case 'sect': if (a === 'learning' || a === 'journal') { S.settings.sections[a] = S.settings.sections[a] === false; await send(ctx, (S.settings.sections[a] ? '✅ فعال شد: ' : '⬜️ پنهان شد: ') + (a === 'learning' ? 'یادگیری' : 'دفتر شخصی') + ' (منوی پایین به‌روز شد)', null, { main: true }); } return showSettings(ctx);
       case 'nm': return ask(ctx, 'name', {}, '👤 دوست داری چه صدایت کنم؟');
       case 'exp': return doExport(ctx);
-      case 'imp': return ask(ctx, 'import', {}, '📥 فایل پشتیبان ناوا (json) را بفرست — از همین ربات یا از نسخهٔ وب.\n⚠️ داده‌های فعلی ربات جایگزین می‌شوند.');
+      case 'imp': return ask(ctx, 'import', {}, '📥 فایل پشتیبان رویش (json) را بفرست — از همین ربات یا از نسخهٔ وب.\n⚠️ داده‌های فعلی ربات جایگزین می‌شوند.');
       case 'wipe': return send(ctx, '⚠️ همهٔ داده‌هایت (کارها، اهداف، جلسه‌ها، دفتر و …) برای همیشه پاک شود؟ پیشنهاد می‌کنم اول پشتیبان بگیری.', [[btn('💾 اول پشتیبان', 'exp')], [btn('بله، همه پاک شود', 'wipeok'), btn('نه', 'settings')]]);
       case 'wipeok': return wipeAll(ctx);
       default: return null;
@@ -831,7 +831,7 @@ export function createBot({ api, store, allowed = [], now = () => Date.now(), lo
   }
 
   // ---------- message router ----------
-  const HELP = ['🌿 <b>ناوا — راهنمای کوتاه</b>', '',
+  const HELP = ['🌿 <b>رویش — راهنمای کوتاه</b>', '',
     '☀️ <b>امروز</b>: کجا هستم، چه چیزی مهم است و قدم بعدی.', '🧭 <b>از کجا شروع کنم؟</b>: یک پیشنهاد با دلیل، بر اساس اولویت، انرژی، زمان، مهلت و اهداف.',
     '🎯 <b>اهداف</b>: هدف ← مرحله/پروژه ← قدم؛ با پیشرفت و قدم بعدی.', '⏱ <b>تمرکز</b>: تایمر با زمان دلخواه، توقف/ادامه، ثبت نتیجه و خروجی (کد، فایل، عکس).',
     '📚 <b>یادگیری</b>: منابع، آخرین مبحث، قدم بعدی، سؤال‌ها، یادداشت‌ها، ایده‌ها.', '📓 <b>دفتر</b>: حال، انرژی و نوشته‌های خصوصی.', '🗓 <b>مرور هفتگی</b> و 📊 گزارش زمان.', '',
@@ -959,7 +959,7 @@ export function createBot({ api, store, allowed = [], now = () => Date.now(), lo
       case 'start': {
         const name = S.settings.name || ctx.B.name;
         const first = !S.tasks.length && !S.goals.length;
-        await send(ctx, '🌿 ' + (name ? 'سلام ' + esc(name) + '!' : 'سلام!') + ' به <b>ناوا</b> خوش آمدی.\n' +
+        await send(ctx, '🌿 ' + (name ? 'سلام ' + esc(name) + '!' : 'سلام!') + ' به <b>رویش</b> خوش آمدی.\n' +
           (first ? 'اینجا جای آرامی برای کارها، اهداف، تمرکز و رشد توست — بدون عجله و بدون احساس گناه.\n\nبرای شروع: یک کار کوچک بنویس و بفرست، یا از «🎯 اهداف» یک نمونهٔ آماده بردار. /help راهنماست.' : 'از منوی پایین هر بخشی را خواستی باز کن.'), null, { main: true });
         return showToday(ctx);
       }
@@ -1030,7 +1030,7 @@ export function createBot({ api, store, allowed = [], now = () => Date.now(), lo
     const cq = u.callback_query, msg = u.message;
     const from = cq ? cq.from : msg && msg.from; if (!from || from.is_bot) return;
     const chat = cq ? cq.message && cq.message.chat : msg.chat; if (!chat) return;
-    if (chat.type !== 'private') { if (msg) await api.call('sendMessage', { chat_id: chat.id, text: 'ناوا یک دستیار شخصی است و فقط در گفت‌وگوی خصوصی کار می‌کند.' }).catch(() => {}); return; }
+    if (chat.type !== 'private') { if (msg) await api.call('sendMessage', { chat_id: chat.id, text: 'رویش یک دستیار شخصی است و فقط در گفت‌وگوی خصوصی کار می‌کند.' }).catch(() => {}); return; }
     if (allowed.length && !allowed.includes(Number(from.id))) {
       if (cq) await api.call('answerCallbackQuery', { callback_query_id: cq.id, text: 'دسترسی ندارید' }).catch(() => {});
       else await api.call('sendMessage', { chat_id: chat.id, text: '🔒 این ربات شخصی است و فقط برای صاحبش کار می‌کند.\nشناسهٔ عددی شما: ' + from.id }).catch(() => {});
