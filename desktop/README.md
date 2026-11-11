@@ -10,4 +10,8 @@ npm ci
 npm run build
 ```
 
-خروجی در `builds/windows-output/Rooyesh-Setup-1.0.0.exe` قرار می‌گیرد. گردش کار `Build Rooyesh for Windows` در GitHub Actions همین مراحل را اجرا می‌کند و با اجرای دستی، فایل نصب را در انتشار `v1.0.0` قرار می‌دهد.
+خروجی در `builds/windows-output/Rooyesh-Setup-<version>.exe` قرار می‌گیرد. متغیر محیطی `ROOYESH_VERSION` شمارهٔ ساخت محلی را تعیین می‌کند. مقدار پیش‌فرض از `desktop/package.json` خوانده می‌شود.
+
+گردش کار `Release Rooyesh for Windows` با پوش تغییرات برنامه روی `main` یا اجرای دستی از بخش Actions شروع می‌شود. پس از موفقیت آزمون‌های منطق وب و ربات، شمارهٔ patch را از آخرین تگ نسخه افزایش می‌دهد و نصب‌کننده را در یک انتشار جدید منتشر می‌کند. تغییرات صرفاً مستندات انتشار را شروع نمی‌کنند. فایل‌های نصب اندروید از انتشارهای قبلی قابل دریافت‌اند.
+
+[آخرین نسخهٔ ویندوز](https://github.com/Nahur1/rooyesh/releases/latest)

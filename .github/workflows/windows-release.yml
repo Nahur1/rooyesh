@@ -1,24 +1,91 @@
-name: Build Rooyesh for Windows
+name: Release Rooyesh for Windows
+
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/windows-release.yml'
+      - 'desktop/**'
+      - 'webapp/**'
+      - 'telegram-bot/**'
+      - 'excel/**'
+      - '!**/*.md'
+      - '!webapp/tests/screenshots/**'
+      - '!excel/previews/**'
   workflow_dispatch:
+
+concurrency:
+  group: rooyesh-windows-release
+  cancel-in-progress: false
+
 permissions:
   contents: write
+
 jobs:
-  windows:
+  release:
+    if: github.ref == 'refs/heads/main'
     runs-on: windows-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Choose the next patch version
+        id: version
+        shell: pwsh
+        run: |
+          $stableTagPattern = '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$'
+          $currentTags = @(git tag --points-at HEAD | Where-Object { $_ -match $stableTagPattern })
+          if ($currentTags.Count -gt 0) {
+            'skip=true' >> $env:GITHUB_OUTPUT
+            Write-Output "This commit is already tagged: $($currentTags -join ', ')."
+            return
+          }
+          $latestTag = git tag --sort=-version:refname | Where-Object { $_ -match $stableTagPattern } | Select-Object -First 1
+          if ($latestTag) {
+            $previous = [version]$latestTag.Substring(1)
+          } else {
+            $previous = [version]((Get-Content desktop/package.json -Raw | ConvertFrom-Json).version)
+          }
+          $version = "$($previous.Major).$($previous.Minor).$($previous.Build + 1)"
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=v$version" >> $env:GITHUB_OUTPUT
+
       - uses: actions/setup-node@v4
+        if: steps.version.outputs.skip != 'true'
         with:
           node-version: '22'
           cache: npm
           cache-dependency-path: desktop/package-lock.json
-      - run: npm ci
+
+      - name: Test the web core and Telegram bot
+        if: steps.version.outputs.skip != 'true'
+        run: |
+          npm --prefix webapp test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm --prefix telegram-bot test
+
+      - name: Install Windows build dependencies
+        if: steps.version.outputs.skip != 'true'
+        run: npm ci
         working-directory: desktop
-      - run: npm run build
+
+      - name: Build the versioned Windows installer
+        if: steps.version.outputs.skip != 'true'
+        run: npm run build
         working-directory: desktop
-      - name: Publish Rooyesh installer
-        run: gh release upload v1.0.0 builds/windows-output/Rooyesh-Setup-1.0.0.exe --clobber --repo $env:GITHUB_REPOSITORY
+        env:
+          ROOYESH_VERSION: ${{ steps.version.outputs.version }}
+
+      - name: Publish a new GitHub release
+        if: steps.version.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          ROOYESH_VERSION: ${{ steps.version.outputs.version }}
+          ROOYESH_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          $installer = "builds/windows-output/Rooyesh-Setup-$env:ROOYESH_VERSION.exe"
+          if (-not (Test-Path -LiteralPath $installer -PathType Leaf)) { throw "Missing installer: $installer" }
+          gh release create $env:ROOYESH_TAG $installer --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "رویش $env:ROOYESH_VERSION — ویندوز" --generate-notes --latest

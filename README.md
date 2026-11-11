@@ -12,7 +12,7 @@
 هر پوشه یک `README.md` با توضیح کامل دارد.
 
 ## دانلود برنامه
-- [نصب‌کنندهٔ ویندوز](https://github.com/Nahur1/rooyesh/releases/download/v1.0.0/Rooyesh-Setup-1.0.0.exe)
+- [آخرین نصب‌کنندهٔ ویندوز](https://github.com/Nahur1/rooyesh/releases/latest)
 - [برنامهٔ اندروید](https://github.com/Nahur1/rooyesh/releases/download/v1.0.0/Rooyesh-1.0.0.apk)
 
 پشتیبان‌های نسخهٔ قبلی همچنان در وب و ربات قابل بازیابی‌اند. نسخهٔ اندروید با شناسهٔ `ir.rooyesh.app` کنار برنامهٔ قبلی نصب می‌شود؛ برای انتقال اطلاعات، از برنامهٔ قبلی پشتیبان بگیر و در رویش بازیابی کن. نسخهٔ ویندوز از همان محل ذخیرهٔ اطلاعات قبلی استفاده می‌کند.
