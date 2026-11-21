@@ -23,6 +23,7 @@ for (const file of webFiles) {
 await fs.cp(path.join(here, 'assets', 'fonts'), path.join(appDir, 'fonts'), { recursive: true });
 await fs.copyFile(path.join(here, 'assets', 'fonts.css'), path.join(appDir, 'fonts.css'));
 await fs.copyFile(path.join(here, 'assets', 'icon.png'), path.join(buildDir, 'icon.png'));
+await fs.copyFile(path.join(here, 'installer', 'upgrade.nsh'), path.join(buildDir, 'upgrade.nsh'));
 await fs.copyFile(path.join(here, 'main.js'), path.join(stage, 'main.js'));
 
 const index = path.join(appDir, 'index.html');
@@ -49,6 +50,10 @@ const pkg = {
     files: ['main.js', 'package.json', 'app/**/*', 'build/icon.png'],
     win: { target: 'nsis', icon: 'build/icon.png', signExecutable: false },
     nsis: {
+      // This matches the GUID used by existing Rooyesh installers.
+      guid: '878bb1c8-4afe-5341-8947-391eb01cd39c',
+      include: 'build/upgrade.nsh',
+      deleteAppDataOnUninstall: false,
       oneClick: false,
       allowToChangeInstallationDirectory: true,
       createDesktopShortcut: true,

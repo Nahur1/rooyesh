@@ -79,6 +79,13 @@ jobs:
         env:
           ROOYESH_VERSION: ${{ steps.version.outputs.version }}
 
+      - name: Test installation and replacement of previous versions
+        if: steps.version.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ROOYESH_VERSION: ${{ steps.version.outputs.version }}
+        run: ./desktop/tests/upgrade.ps1 -Installer "builds/windows-output/Rooyesh-Setup-$env:ROOYESH_VERSION.exe" -Version $env:ROOYESH_VERSION
+
       - name: Publish a new GitHub release
         if: steps.version.outputs.skip != 'true'
         env:
