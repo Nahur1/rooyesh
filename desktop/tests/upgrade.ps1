@@ -25,6 +25,7 @@ function Assert-Condition([bool]$Condition, [string]$Message) {
     if (-not $Condition) { throw $Message }
 }
 function Invoke-Installer([string]$Executable, [string]$Arguments, [bool]$ExpectFailure = $false) {
+    Write-Output "Running $([IO.Path]::GetFileName($Executable)) $Arguments"
     $process = Start-Process -FilePath $Executable -ArgumentList $Arguments -PassThru -WindowStyle Hidden
     if (-not $process.WaitForExit(180000)) {
         $process.Kill()
@@ -57,12 +58,7 @@ Assert-Condition (Test-Path -LiteralPath (Join-Path $legacyUserDir 'Nava.exe')) 
 Assert-Condition (-not (Test-Path -LiteralPath (Join-Path $legacyUserDir 'Rooyesh.exe'))) 'Installation continued after an uninstall failure.'
 Assert-Condition (Test-Path "HKCU:\$legacyKey") 'Legacy registration was deleted after an uninstall failure.'
 
-# Reusing the old directory must remove Nava before new files are extracted.
 Remove-Item -LiteralPath $failureMarker
-Invoke-Installer $Installer "/S /currentuser /D=$legacyUserDir"
-Assert-Condition (-not (Test-Path -LiteralPath (Join-Path $legacyUserDir 'Nava.exe'))) 'Legacy executable remains after migration.'
-Assert-Condition (Test-Path -LiteralPath (Join-Path $legacyUserDir 'Rooyesh.exe')) 'New executable is missing in the reused directory.'
-Assert-Condition (-not (Test-Path "HKCU:\$legacyKey")) 'Legacy registration remains after migration.'
 
 # Install the actual published predecessor, then add both legacy install scopes.
 $previousTag = gh release view --repo $env:GITHUB_REPOSITORY --json tagName --jq .tagName
@@ -75,13 +71,23 @@ Invoke-Installer $previousInstaller "/S /currentuser /D=$previousDir"
 Assert-Condition (Test-Path -LiteralPath (Join-Path $previousDir 'Rooyesh.exe')) 'The previous release did not install.'
 Assert-Condition ((Get-ItemProperty "HKCU:\$currentKey").DisplayVersion -ne $Version) 'The predecessor test must install a different version.'
 
+# Reusing the old directory must remove both old apps before new files are extracted.
+Invoke-Installer $Installer "/S /currentuser /D=$legacyUserDir"
+Assert-Condition (-not (Test-Path -LiteralPath (Join-Path $legacyUserDir 'Nava.exe'))) 'Legacy executable remains after migration.'
+Assert-Condition (Test-Path -LiteralPath (Join-Path $legacyUserDir 'Rooyesh.exe')) 'New executable is missing in the reused directory.'
+Assert-Condition (-not (Test-Path "HKCU:\$legacyKey")) 'Legacy registration remains after migration.'
+Assert-Condition (-not (Test-Path -LiteralPath (Join-Path $previousDir 'Rooyesh.exe'))) 'The previous published executable remains after upgrade.'
+
+# Add legacy installations alongside the upgraded Rooyesh in both scopes.
+$installedUserDir = $legacyUserDir
+$legacyUserDir = Join-Path $testRoot 'Additional legacy user installation'
 Invoke-Installer $legacyInstaller "/S /D=$legacyUserDir"
 $legacyMachineDir = Join-Path $testRoot 'Legacy machine installation'
 Invoke-Installer $legacyInstaller "/S /allusers /D=$legacyMachineDir"
 $newDir = Join-Path $testRoot 'Current Rooyesh installation'
 Invoke-Installer $Installer "/S /D=$newDir"
 Assert-Condition (Test-Path -LiteralPath (Join-Path $newDir 'Rooyesh.exe')) 'The new version was not installed.'
-Assert-Condition (-not (Test-Path -LiteralPath (Join-Path $previousDir 'Rooyesh.exe'))) 'The previous Rooyesh executable remains.'
+Assert-Condition (-not (Test-Path -LiteralPath (Join-Path $installedUserDir 'Rooyesh.exe'))) 'The previous Rooyesh executable remains.'
 Assert-Condition (-not (Test-Path -LiteralPath (Join-Path $legacyUserDir 'Nava.exe'))) 'The per-user Nava executable remains.'
 Assert-Condition (-not (Test-Path -LiteralPath (Join-Path $legacyMachineDir 'Nava.exe'))) 'The machine-wide Nava executable remains.'
 Assert-Condition (-not (Test-Path "HKCU:\$legacyKey")) 'The per-user Nava registration remains.'
