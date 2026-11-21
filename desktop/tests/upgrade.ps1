@@ -18,8 +18,8 @@ if (-not ([Security.Principal.WindowsPrincipal]::new($identity)).IsInRole([Secur
 $Installer = (Resolve-Path -LiteralPath $Installer).Path
 $testRoot = Join-Path $env:RUNNER_TEMP ("rooyesh-upgrade-" + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $testRoot | Out-Null
-$legacyKey = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\ada7a9bb-a0df-54c5-a5e0-79bc32b2f0f0'
-$currentKey = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\878bb1c8-4afe-5341-8947-391eb01cd39c'
+$legacyKey = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\9a31e201-1f01-58b0-b8f0-f1403a53c121'
+$currentKey = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\87fe41a6-4156-5366-9a77-7c0128618733'
 
 function Assert-Condition([bool]$Condition, [string]$Message) {
     if (-not $Condition) { throw $Message }

@@ -51,7 +51,7 @@ const pkg = {
     win: { target: 'nsis', icon: 'build/icon.png', signExecutable: false },
     nsis: {
       // This matches the GUID used by existing Rooyesh installers.
-      guid: '878bb1c8-4afe-5341-8947-391eb01cd39c',
+      guid: '87fe41a6-4156-5366-9a77-7c0128618733',
       include: 'build/upgrade.nsh',
       deleteAppDataOnUninstall: false,
       oneClick: false,

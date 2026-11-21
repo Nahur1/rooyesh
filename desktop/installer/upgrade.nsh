@@ -1,6 +1,6 @@
 ; Keep the Rooyesh appId stable. electron-builder handles same-app upgrades.
 ; These hooks also migrate the registered pre-rename Nava installation.
-!define NAVA_GUID "ada7a9bb-a0df-54c5-a5e0-79bc32b2f0f0"
+!define NAVA_GUID "9a31e201-1f01-58b0-b8f0-f1403a53c121"
 !define NAVA_UNINSTALL_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${NAVA_GUID}"
 
 !macro RequirePreviousUninstallSuccess

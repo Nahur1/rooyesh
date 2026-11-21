@@ -5,7 +5,7 @@ RequestExecutionLevel user
 SilentInstall silent
 !include LogicLib.nsh
 !include FileFunc.nsh
-!define LEGACY_GUID "ada7a9bb-a0df-54c5-a5e0-79bc32b2f0f0"
+!define LEGACY_GUID "9a31e201-1f01-58b0-b8f0-f1403a53c121"
 !define LEGACY_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LEGACY_GUID}"
 Var arguments
 Var option
